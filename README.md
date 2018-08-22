@@ -1,5 +1,5 @@
 # AutoCheckIn
 useage:
-'''console
+```console
 python AutoCheckIn.py url.txt
-'''
+```
