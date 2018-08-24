@@ -14,9 +14,7 @@ header = {
 def url_check(url, data):
     r = s.post(url, headers=header, data=data, verify=False)
     if r.status_code != requests.codes.ok:
-        list_url = url.split('//')
-        list_url.insert(1, '//user.')
-        url = ''.join(list_url)
+        url = url[:7] + 'user.' + url[7:]
         url_check(url, data)
     else:
         print(r.json()['msg'])
