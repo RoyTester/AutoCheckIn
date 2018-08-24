@@ -27,12 +27,12 @@ def checkin():
         with open(str(file), 'r') as f:
             content = f.readlines()
         data = {
-            'eamil': content[1].strip('\n'),
+            'email': content[1].strip('\n'),
             'passwd': content[2].strip('\n'),
         }
-        url = 'https://{}/auth/login'.format(content[0].strip('\n'))
+        url = 'http://{}/auth/login'.format(content[0].strip('\n'))
         url_check(url, data)
-        checkin_url = '{}/user/checkin'.format(url.strip('/auth/login'))
+        checkin_url = '{}/user/checkin'.format(url.rstrip('/auth/login'))
         url_check(checkin_url, data='')
     except Exception as e:
         print('检查网络及文本格式', e)
