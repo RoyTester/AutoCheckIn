@@ -16,3 +16,7 @@ Run dist/Spider_Movie.exe
 
 1. 保存为json
 2. MySQL保存
+
+# geetest
+
+selenium自动登录采用geetest验证码的网站
