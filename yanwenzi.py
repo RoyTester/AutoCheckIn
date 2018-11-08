@@ -56,9 +56,8 @@ def get_ywz(url):
         page_tags = soup('div', class_='page')[0]
         all_page = max([int(i.string) for i in page_tags('a')])
         now_page = int(page_tags.span.string)
-    else:
-        return ywzs, ywz_texts, 0
-    return ywzs, ywz_texts, now_page < all_page
+        return ywzs, ywz_texts, bool(now_page < all_page)
+    return ywzs, ywz_texts, bool()
 
 
 def next_page(url):
@@ -70,27 +69,30 @@ def next_page(url):
     return url
 
 
-def get_ywz_dict(url, a=[], b=[]):
-    ywzs, ywz_texts, bool_page = get_ywz(url)
+def get_ywz_dict(url, a=1, b=1):
+    if a == 1 and b == 1:
+        a = []
+        b = []
+    ywzs, ywz_texts, bool_page = get_ywz(url=url)
     a.extend(ywzs)
     b.extend(ywz_texts)
     if bool_page:
         url = next_page(url)
-        get_ywz_dict(url, a, b)
+        get_ywz_dict(url=url, a=a, b=b)
     return a, b
 
-
+# TODO 未考虑颜文字描述重复的情况,也有爬取结果为null或\r\n的情况
 @run_time
 def json_dump():
     class_dict = {}
     class_count, count = 1, 1
     urls, titles = get_urls()
-    for url, title in zip(urls, titles):
+    for (url, title) in list(zip(urls, titles)):
         ywz_dict = {}
         print('爬取颜文字第{}类：{}'.format(class_count, title))
         class_count += 1
-        a, b = get_ywz_dict(url)
-        for ywz, ywz_text in zip(a, b):
+        a, b = get_ywz_dict(url=url)
+        for (ywz, ywz_text) in list(zip(a, b)):
             print('爬取颜文字总数{}'.format(count))
             count += 1
             ywz_dict[ywz_text] = ywz
@@ -105,7 +107,7 @@ def sql_dump():
     cursor = connect.cursor()
     class_count, count = 1, 1
     urls, titles = get_urls()
-    for url, title in zip(urls, titles):
+    for url, title in list(zip(urls, titles)):
         print('爬取颜文字第{}类：{}'.format(class_count, title))
         class_count += 1
         try:
@@ -120,7 +122,7 @@ def sql_dump():
         )
         result = cursor.fetchone()[0]
         ywzs, ywz_texts = get_ywz_dict(url)
-        for ywz, ywz_text in zip(ywzs, ywz_texts):
+        for ywz, ywz_text in list(zip(ywzs, ywz_texts)):
             print('爬取颜文字总数{}'.format(count))
             count += 1
             try:
@@ -132,7 +134,6 @@ def sql_dump():
             except:
                 connect.rollback()
     connect.close()
-
 
 if __name__ == '__main__':
     # json_dump()
